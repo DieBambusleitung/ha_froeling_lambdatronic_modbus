@@ -45,7 +45,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         if data.get('boiler01', False):
             numbers.extend([
                 FroelingNumber(hass, translations, data, "Boiler_1_Gewuenschte_Boilertemperatur", 41632, "°C", 2, 0, 10, 100),
-                FroelingNumber(hass, translations, data, "Boiler_1_Nachladen_wenn_Boilertemperatur_unter", 41633, "°C", 2, 0, 1, 90)
+                FroelingNumber(hass, translations, data, "Boiler_1_Nachladen_wenn_Boilertemperatur_unter", 41633, "°C", 2, 0, 1, 90),
+                # Test for Modbus-Kessel-Control
+                FroelingNumber(hass, translations, data, "Boiler_1_Solltemperatur", 48019, "°C", 2, 0, 0, 65),
+                FroelingNumber(hass, translations, data, "VL_1_Solltemperatur", 48001, "°C", 2, 0, 0, 75)
             ])
         if data.get('austragung', False):
             numbers.extend([
