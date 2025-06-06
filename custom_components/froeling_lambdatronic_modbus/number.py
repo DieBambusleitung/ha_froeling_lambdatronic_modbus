@@ -133,7 +133,6 @@ class FroelingNumber(NumberEntity):
                     self._value = None
                 else:
                     raw_value = result.registers[0]
-                    _LOGGER.debug("Error reading Modbus holding register %s", self._register - 40001)
                     self._value = round(raw_value / self._scaling_factor, self._decimal_places)
                     _LOGGER.debug("processed Modbus holding register %s: raw_value=%s, _value=%s", self._register - 40001, raw_value, self._value)
             except Exception as e:
