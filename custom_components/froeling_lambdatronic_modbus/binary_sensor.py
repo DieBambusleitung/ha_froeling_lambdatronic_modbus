@@ -1,5 +1,5 @@
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from pymodbus.client import ModbusTcpClient
+from pymodbus.client.sync import ModbusTcpClient
 import logging
 from datetime import timedelta
 from homeassistant.helpers.event import async_track_time_interval
