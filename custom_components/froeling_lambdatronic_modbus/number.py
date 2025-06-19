@@ -1,5 +1,5 @@
 from homeassistant.components.number import NumberEntity
-from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.client import ModbusTcpClient
 import logging
 from datetime import timedelta
 from homeassistant.helpers.event import async_track_time_interval
@@ -64,7 +64,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         async_track_time_interval(hass, number.async_update, update_interval)
 
 class FroelingNumber(NumberEntity):
-    def __init__(self, hass, translations, data, entity_id, register, unit, scaling_factor, decimal_places=0, min_value=0, max_value=0):
+    def __init__(self, hass, translations, data, entity_id, register, slave, scaling_factor, decimal_places=0, min_value=0, max_value=0):
         self._hass = hass
         self._translations = translations
         self._host = data['host']
@@ -72,7 +72,7 @@ class FroelingNumber(NumberEntity):
         self._device_name = data['name']
         self._entity_id = entity_id
         self._register = register
-        self._unit = unit
+        self._slave = slave
         self._scaling_factor = scaling_factor
         self._decimal_places = decimal_places
         self._min_value = min_value
@@ -93,8 +93,8 @@ class FroelingNumber(NumberEntity):
         return self._value
 
     @property
-    def native_unit_of_measurement(self):
-        return self._unit
+    def native_slave_of_measurement(self):
+        return self._slave
 
     @property
     def native_min_value(self):
@@ -119,7 +119,7 @@ class FroelingNumber(NumberEntity):
         if client.connect():
             try:
                 scaled_value = int(value * self._scaling_factor)
-                client.write_register(self._register - 40001, scaled_value, unit=2)
+                client.write_register(self._register - 40001, count=scaled_value, slave=2)
                 self._value = value
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -130,7 +130,7 @@ class FroelingNumber(NumberEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                result = client.read_holding_registers(self._register - 40001, 1, unit=2)
+                result = client.read_holding_registers(self._register - 40001, count=1, slave=2)
                 if result.isError():
                     _LOGGER.error("Error reading Modbus holding register %s", self._register - 40001)
                     self._value = None

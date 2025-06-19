@@ -1,5 +1,5 @@
 from homeassistant.components.switch import SwitchEntity
-from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.client import ModbusTcpClient
 import logging
 from datetime import timedelta
 from homeassistant.helpers.event import async_track_time_interval
@@ -68,7 +68,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                client.write_register(self._register - 40001, 1, unit=2)
+                client.write_register(self._register - 40001, count=1, slave=2)
                 self._is_on = True
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -80,7 +80,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                client.write_register(self._register - 40001, 0, unit=2)
+                client.write_register(self._register - 40001, count=0, slave=2)
                 self._is_on = False
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -92,7 +92,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                client.write_register(self._register - 40001, f"{1 if wert else 0}", unit=2)
+                client.write_register(self._register - 40001, count=f"{1 if wert else 0}", slave=2)
                 self._is_on = not self._is_on
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -104,7 +104,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                result = client.read_holding_registers(self._register - 40001, 1, unit=2)
+                result = client.read_holding_registers(self._register - 40001, count=1, slave=2)
                 if result.isError():
                     _LOGGER.error("Error reading Modbus holding register %s", self._register - 40001)
                     self._is_on = None
