@@ -92,7 +92,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         async_track_time_interval(hass, sensor.async_update_text_sensor, update_interval)
 
 class FroelingSensor(SensorEntity):
-    def __init__(self, hass, translations, data, entity_id, register, slave, scaling_factor, decimal_places=0, device_class=None):
+    def __init__(self, hass, translations, data, entity_id, register, unit, scaling_factor, decimal_places=0, device_class=None):
         self._hass = hass
         self._translations = translations
         self._host = data['host']
@@ -100,7 +100,7 @@ class FroelingSensor(SensorEntity):
         self._device_name = data['name']
         self._entity_id = entity_id
         self._register = register
-        self._slave = slave
+        self._unit = unit
         self._scaling_factor = scaling_factor
         self._decimal_places = decimal_places
         self._device_class = device_class
@@ -120,8 +120,8 @@ class FroelingSensor(SensorEntity):
         return self._state
 
     @property
-    def slave_of_measurement(self):
-        return self._slave
+    def unit_of_measurement(self):
+        return self._unit
 
     @property
     def device_class(self):
@@ -141,7 +141,7 @@ class FroelingSensor(SensorEntity):
         client = ModbusTcpClient(self._host, port=self._port, retries=2, timeout=15)
         if client.connect():
             try:
-                result = client.read_input_registers(self._register - 30001, count=1, slave=2)
+                result = client.read_input_registers(self._register - 30001, count=1, device_id=2)
                 if result.isError():
                     _LOGGER.error("Error reading Modbus input register %s", self._register - 30001)
                     self._state = None
@@ -297,7 +297,7 @@ class FroelingTextSensor(SensorEntity):
         client = ModbusTcpClient(self._host, port=self._port, retries=2, timeout=15)
         if client.connect():
             try:
-                result = client.read_input_registers(self._register - 30001, count=1, slave=2)
+                result = client.read_input_registers(self._register - 30001, count=1, device_id=2)
                 if result.isError():
                     _LOGGER.error("Error reading Modbus input register %s", self._register - 30001)
                     self._state = None

@@ -68,7 +68,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                client.write_register(self._register - 40001, count=1, slave=2)
+                client.write_register(self._register - 40001, count=1, device_id=2)
                 self._is_on = True
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -80,7 +80,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                client.write_register(self._register - 40001, count=0, slave=2)
+                client.write_register(self._register - 40001, count=0, device_id=2)
                 self._is_on = False
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -92,7 +92,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                client.write_register(self._register - 40001, count=f"{1 if wert else 0}", slave=2)
+                client.write_register(self._register - 40001, count=f"{1 if wert else 0}", device_id=2)
                 self._is_on = not self._is_on
             except Exception as e:
                 _LOGGER.error("Exception during Modbus communication: %s", e)
@@ -104,7 +104,7 @@ class FroelingSwitch(SwitchEntity):
         client = ModbusTcpClient(self._host, port=self._port)
         if client.connect():
             try:
-                result = client.read_holding_registers(self._register - 40001, count=1, slave=2)
+                result = client.read_holding_registers(self._register - 40001, count=1, device_id=2)
                 if result.isError():
                     _LOGGER.error("Error reading Modbus holding register %s", self._register - 40001)
                     self._is_on = None
